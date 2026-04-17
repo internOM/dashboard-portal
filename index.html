@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Portal</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 220px;
+            background-color: #1e1e1e;
+            color: #dcdcdc;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            margin-top: 10px;
+            background-color: #2c2c2c;
+            color: #dcdcdc;
+            border: 1px solid #444;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 6px;
+            width: 100%;
+            background: #3a3a3a;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #555;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            background-color: #000;
+            color: #fff;
+            overflow: auto;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: #000;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #dashboardList {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            padding-left: 24px;
+        }
+
+        .dashboard-btn {
+            display: block;
+            width: 320px;
+            height: 36px;
+            padding: 0 16px;
+            background: #1a3a5c;
+            color: #4da3ff;
+            border: 1px solid #4da3ff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-family: Arial, sans-serif;
+            text-align: left;
+            line-height: 36px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: background 0.2s, color 0.2s, transform 0.1s;
+        }
+
+        .dashboard-btn:hover {
+            background: #4da3ff;
+            color: #000;
+            transform: translateX(4px);
+        }
+
+        .instructions-row {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+        }
+
+        .instructions-col {
+            flex: 1;
+            padding: 0 24px;
+        }
+
+        .instructions-col:first-child {
+            padding-left: 0;
+            border-right: 1px solid #333;
+        }
+
+        .instructions-col:last-child {
+            padding-right: 0;
+        }
+
+        .instructions-col h2 {
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        .instructions-col ul {
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        #homeView h3 {
+            font-size: 22px;
+        }
+
+        .lang-label {
+            font-size: 13px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="sidebar">
+            <h2>Dashboard Portal</h2>
+
+            <select id="dashboardSelect">
+                <option value="HOME">Home</option>
+            </select>
+
+            <button onclick="openInNewTab()">Open in New Tab</button>
+        </div>
+
+        <div class="main-content">
+            <!-- HOME VIEW -->
+            <div id="homeView">
+
+                <div class="instructions-row">
+                    <!-- English -->
+                    <div class="instructions-col">
+                        <p class="lang-label">English</p>
+                        <h2>Instructions</h2>
+                        <ul>
+                            <li>Select a dashboard from the dropdown menu.</li>
+                            <li>The dashboard will load in the panel.</li>
+                            <li>Use "Open in New Tab" for full-screen view.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Chinese -->
+                    <div class="instructions-col">
+                        <p class="lang-label">&#20013;&#25991;</p>
+                        <h2>&#20351;&#29992;&#35828;&#26126;</h2>
+                        <ul>
+                            <li>&#20174;&#19979;&#25289;&#33756;&#21333;&#20013;&#36873;&#25321;&#19968;&#20010;&#20284;&#34920;&#26495;&#12290;
+                            </li>
+                            <li>&#20284;&#34920;&#26495;&#23558;&#22312;&#21491;&#20391;&#38754;&#26495;&#20013;&#21152;&#36733;&#26174;&#31034;&#12290;
+                            </li>
+                            <li>&#28857;&#20987;&#8220;&#22312;&#26032;&#26631;&#31614;&#39029;&#20013;&#25171;&#24320;&#8221;&#21487;&#36827;&#34892;&#20840;&#23631;&#26597;&#30475;&#12290;
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Available Dashboards &nbsp;|&nbsp; &#21487;&#29992;&#20284;&#34920;&#26495;</h3>
+                <div id="dashboardList"></div>
+            </div>
+
+            <!-- IFRAME VIEW -->
+            <iframe id="dashboardFrame" class="hidden"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const dashboards = [
+            {
+                name: "Shipment Condition",
+                url: "https://braylen-chondromatous-nonhereditably.ngrok-free.dev/d/ptIZpqsNz/shipment-condition?orgId=1&refresh=5s&kiosk"
+            },
+            {
+                name: "One Way Shipment",
+                url: "https://braylen-chondromatous-nonhereditably.ngrok-free.dev/d/OVlHCrCNk/one-way-shipment?orgId=1&refresh=5s&kiosk"
+            },
+            {
+                name: "EAB Backlog",
+                url: "https://braylen-chondromatous-nonhereditably.ngrok-free.dev/d/AF6U__CNz/eab-backlog?orgId=1&refresh=5s&kiosk"
+            },
+            {
+                name: "Temperature Dashboard",
+                url: "https://braylen-chondromatous-nonhereditably.ngrok-free.dev/d/Nh0w3JqHk/temperature-dashboard?orgId=1&refresh=5s&kiosk"
+            },
+            {
+                name: "EAB Work In Progress",
+                url: "https://braylen-chondromatous-nonhereditably.ngrok-free.dev/d/cj-3cZPHk/eab-work-in-progress?orgId=1&refresh=5s&kiosk"
+            },
+            {
+                name: "SEB Work In Progress",
+                url: "https://braylen-chondromatous-nonhereditably.ngrok-free.dev/d/41qVUGyHk/seb-work-in-progress?orgId=1&refresh=5s&kiosk"
+            },
+            {
+                name: "CA Work In Progress",
+                url: "https://braylen-chondromatous-nonhereditably.ngrok-free.dev/d/noB9-DsHz/ca-work-in-progress?orgId=1&refresh=5s&kiosk"
+            },
+            {
+                name: "SMT Process Time",
+                url: "https://braylen-chondromatous-nonhereditably.ngrok-free.dev/d/sV-83s6Hk/smt-process-time?orgId=1&refresh=5s&kiosk"
+            },
+            {
+                name: "Production Output",
+                url: "https://braylen-chondromatous-nonhereditably.ngrok-free.dev/d/8DHIDBgvz/production-output?orgId=1&refresh=30s&kiosk"
+            }
+        ];
+
+        const select = document.getElementById('dashboardSelect');
+        const iframe = document.getElementById('dashboardFrame');
+        const homeView = document.getElementById('homeView');
+        const dashboardList = document.getElementById('dashboardList');
+
+        function populateDropdown() {
+            dashboards.forEach(db => {
+                const option = document.createElement('option');
+                option.value = db.url;
+                option.textContent = db.name;
+                select.appendChild(option);
+            });
+        }
+
+        function renderHomeList() {
+            dashboardList.innerHTML = "";
+
+            dashboards.forEach(db => {
+                const btn = document.createElement('button');
+                btn.className = "dashboard-btn";
+                btn.textContent = db.name;
+
+                btn.onclick = () => {
+                    select.value = db.url;
+                    showDashboard(db.url);
+                };
+
+                dashboardList.appendChild(btn);
+            });
+        }
+
+        function showDashboard(url) {
+            if (!url || url === "HOME") {
+                iframe.classList.add("hidden");
+                homeView.classList.remove("hidden");
+                return;
+            }
+
+            homeView.classList.add("hidden");
+            iframe.classList.remove("hidden");
+
+            iframe.src = url;
+            localStorage.setItem("selectedDashboard", url);
+        }
+
+        function openInNewTab() {
+            const url = select.value;
+            if (url && url !== "HOME") {
+                window.open(url, "_blank");
+            }
+        }
+
+        select.addEventListener('change', () => {
+            showDashboard(select.value);
+        });
+
+        window.onload = () => {
+            populateDropdown();
+            renderHomeList();
+
+            const saved = localStorage.getItem("selectedDashboard");
+
+            if (saved) {
+                select.value = saved;
+                showDashboard(saved);
+            } else {
+                select.value = "HOME";
+                showDashboard("HOME");
+            }
+        };
+    </script>
+
+</body>
+
+</html>
